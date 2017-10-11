@@ -1,6 +1,6 @@
 class MoviesController < ApplicationController
     def index
-        @movies = Movie.all
+        @movies = Movie.all.sort_by {|movie| movie.title } #order(:title)
     end
     
     def show
@@ -9,6 +9,11 @@ class MoviesController < ApplicationController
         # #will render app/views/movies/show.html.haml by default
         # byebug
         @movie = Movie.where(:id => params[:id]).first
+        if(@movie == nil) then
+            flash[:warning] = "No movie of id #{params[:id]} found!"
+            redirect_to movies_path
+            
+        end
         # logger.debug(:id)
         # logger.debug(params[:id])
         # logger.debug(@movie)
@@ -26,7 +31,7 @@ class MoviesController < ApplicationController
         #@movie = Movie.create!(params[:movie]) #old way
         @movie = Movie.create!(movie_params)  # new way
         flash[:notice] = "#{@movie.title} was successfully created."
-        redirect_to movies_path
+        redirect_to movies_path(@movie)
         
     end
     
